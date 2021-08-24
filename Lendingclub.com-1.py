@@ -21,27 +21,55 @@
 
 import pandas as pd
 import numpy as np
+import psutil
+import resource
+import memory_profiler
+from memory_profiler import profile
+import time
+
+
+def uso(mensagem):
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    print ("**********************************************")
+    print (mensagem)
+    #print ("CPU Usage: " + str(psutil.cpu_times()))
+    print ("***CPU Percent:None: " + str(psutil.cpu_percent(interval=None, percpu=True)))
+    #print ("CPU Percent:1: " + str(psutil.cpu_percent(interval=1, percpu=True)))
+    #print ("CPU Percent:0.1: " + str(psutil.cpu_percent(interval=0.1, percpu=True)))
+    mem_usage = memory_profiler.memory_usage()[0]
+    print ("***Memory Usage: " + str(mem_usage))
+    #for name, desc in [
+    # ('ru_utime', 'User time'),
+    # ('ru_stime', 'System time'),
+    # ('ru_maxrss', 'Max. Resident Set Size'),
+    # ('ru_ixrss', 'Shared Memory Size'),
+    # ('ru_idrss', 'Unshared Memory Size'),
+    # ('ru_isrss', 'Stack Size'),
+    # ('ru_inblock', 'Block inputs'),
+    # ('ru_oublock', 'Block outputs'),
+    # ]:
+    # print '%-25s (%-10s) = %s' % (desc, name, getattr(usage, name))
 
 
 # ## Get the Data
 # 
 # ** Use pandas to read loan_data.csv as a dataframe called loans.**
 
-
-print ("Reading Data")
+start = time.time()
+uso ("Reading Data")
 loans = pd.read_csv('loan_data.csv')
 
 
 # ** Check out the info(), head(), and describe() methods on loans.**
 
 
-print ("Info")
+uso ("Info")
 loans.info()
 
-print ("Description")
+uso ("Description")
 loans.describe()
 
-print ("Head")
+uso ("Head")
 loans.head()
 
 
@@ -66,7 +94,7 @@ loans.head()
 # 
 # **Check loans.info() again.**
 
-print ("Info Again")
+uso ("Info Again")
 loans.info()
 
 
@@ -88,7 +116,7 @@ cat_feats = ['purpose']
 
 final_data = pd.get_dummies(loans,columns=cat_feats,drop_first=True)
 
-print ("Final Data")
+uso ("Final Data")
 final_data.info()
 
 
@@ -135,10 +163,10 @@ predictions = dtree.predict(X_test)
 
 from sklearn.metrics import classification_report,confusion_matrix
 
-print ("Classification Report")
+uso ("Classification Report")
 print(classification_report(y_test,predictions))
 
-print ("Confusion Matrix")
+uso ("Confusion Matrix")
 print(confusion_matrix(y_test,predictions))
 
 
@@ -170,8 +198,12 @@ predictions = rfc.predict(X_test)
 
 from sklearn.metrics import classification_report,confusion_matrix
 
-print ("Classification Report")
+uso ("Classification Report")
 print(classification_report(y_test,predictions))
 
-print ("Confusion Matrix")
+uso ("Confusion Matrix")
 print(confusion_matrix(y_test,predictions))
+
+stop = time.time()
+
+print ("Total Time: " + str((stop-start)*1000))
