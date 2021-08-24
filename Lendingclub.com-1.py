@@ -1,18 +1,5 @@
-
 # coding: utf-8
-
-# ___
-# 
-# <a href='http://www.pieriandata.com'> <img src='../Pierian_Data_Logo.png' /></a>
-# ___
-# # Random Forest Project - Solutions
-# 
-# For this project we will be exploring publicly available data from [LendingClub.com](www.lendingclub.com). Lending Club connects people who need money (borrowers) with people who have money (investors). Hopefully, as an investor you would want to invest in people who showed a profile of having a high probability of paying you back. We will try to create a model that will help predict this.
-# 
-# Lending club had a [very interesting year in 2016](https://en.wikipedia.org/wiki/Lending_Club#2016), so let's check out some of their data and keep the context in mind. This data is from before they even went public.
-# 
-# We will use lending data from 2007-2010 and be trying to classify and predict whether or not the borrower paid back their loan in full. You can download the data from [here](https://www.lendingclub.com/info/download-data.action) or just use the csv already provided. It's recommended you use the csv provided as it has been cleaned of NA values.
-# 
+ 
 # Here are what the columns represent:
 # * credit.policy: 1 if the customer meets the credit underwriting criteria of LendingClub.com, and 0 otherwise.
 # * purpose: The purpose of the loan (takes values "credit_card", "debt_consolidation", "educational", "major_purchase", "small_business", and "all_other").
@@ -32,43 +19,29 @@
 # 
 # **Import the usual libraries for pandas and plotting. You can import sklearn later on.**
 
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-get_ipython().magic('matplotlib inline')
 
 
 # ## Get the Data
 # 
 # ** Use pandas to read loan_data.csv as a dataframe called loans.**
 
-# In[2]:
 
-
+print ("Reading Data")
 loans = pd.read_csv('loan_data.csv')
 
 
 # ** Check out the info(), head(), and describe() methods on loans.**
 
-# In[3]:
 
-
+print ("Info")
 loans.info()
 
-
-# In[4]:
-
-
+print ("Description")
 loans.describe()
 
-
-# In[5]:
-
-
+print ("Head")
 loans.head()
 
 
@@ -80,57 +53,11 @@ loans.head()
 # 
 # *Note: This is pretty tricky, feel free to reference the solutions. You'll probably need one line of code for each histogram, I also recommend just using pandas built in .hist()*
 
-# In[6]:
-
-
-plt.figure(figsize=(10,6))
-loans[loans['credit.policy']==1]['fico'].hist(alpha=0.5,color='blue',
-                                              bins=30,label='Credit.Policy=1')
-loans[loans['credit.policy']==0]['fico'].hist(alpha=0.5,color='red',
-                                              bins=30,label='Credit.Policy=0')
-plt.legend()
-plt.xlabel('FICO')
-
-
-# ** Create a similar figure, except this time select by the not.fully.paid column.**
-
-# In[7]:
-
-
-plt.figure(figsize=(10,6))
-loans[loans['not.fully.paid']==1]['fico'].hist(alpha=0.5,color='blue',
-                                              bins=30,label='not.fully.paid=1')
-loans[loans['not.fully.paid']==0]['fico'].hist(alpha=0.5,color='red',
-                                              bins=30,label='not.fully.paid=0')
-plt.legend()
-plt.xlabel('FICO')
-
-
-# ** Create a countplot using seaborn showing the counts of loans by purpose, with the color hue defined by not.fully.paid. **
-
-# In[8]:
-
-
-plt.figure(figsize=(11,7))
-sns.countplot(x='purpose',hue='not.fully.paid',data=loans,palette='Set1')
-
 
 # ** Let's see the trend between FICO score and interest rate. Recreate the following jointplot.**
 
-# In[9]:
-
-
-sns.jointplot(x='fico',y='int.rate',data=loans,color='purple')
-
 
 # ** Create the following lmplots to see if the trend differed between not.fully.paid and credit.policy. Check the documentation for lmplot() if you can't figure out how to separate it into columns.**
-
-# In[10]:
-
-
-plt.figure(figsize=(11,7))
-sns.lmplot(y='int.rate',x='fico',data=loans,hue='credit.policy',
-           col='not.fully.paid',palette='Set1')
 
 
 # # Setting up the Data
@@ -139,9 +66,7 @@ sns.lmplot(y='int.rate',x='fico',data=loans,hue='credit.policy',
 # 
 # **Check loans.info() again.**
 
-# In[12]:
-
-
+print ("Info Again")
 loans.info()
 
 
@@ -155,23 +80,15 @@ loans.info()
 # 
 # **Create a list of 1 element containing the string 'purpose'. Call this list cat_feats.**
 
-# In[36]:
-
-
 cat_feats = ['purpose']
 
 
 # **Now use pd.get_dummies(loans,columns=cat_feats,drop_first=True) to create a fixed larger dataframe that has new feature columns with dummy variables. Set this dataframe as final_data.**
 
-# In[37]:
-
 
 final_data = pd.get_dummies(loans,columns=cat_feats,drop_first=True)
 
-
-# In[38]:
-
-
+print ("Final Data")
 final_data.info()
 
 
@@ -181,13 +98,8 @@ final_data.info()
 # 
 # ** Use sklearn to split your data into a training set and a testing set as we've done in the past.**
 
-# In[20]:
-
 
 from sklearn.model_selection import train_test_split
-
-
-# In[21]:
 
 
 X = final_data.drop('not.fully.paid',axis=1)
@@ -201,21 +113,14 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random
 # 
 # ** Import DecisionTreeClassifier**
 
-# In[22]:
-
 
 from sklearn.tree import DecisionTreeClassifier
 
 
 # **Create an instance of DecisionTreeClassifier() called dtree and fit it to the training data.**
 
-# In[23]:
-
 
 dtree = DecisionTreeClassifier()
-
-
-# In[24]:
 
 
 dtree.fit(X_train,y_train)
@@ -224,27 +129,16 @@ dtree.fit(X_train,y_train)
 # ## Predictions and Evaluation of Decision Tree
 # **Create predictions from the test set and create a classification report and a confusion matrix.**
 
-# In[25]:
-
 
 predictions = dtree.predict(X_test)
 
 
-# In[26]:
-
-
 from sklearn.metrics import classification_report,confusion_matrix
 
-
-# In[27]:
-
-
+print ("Classification Report")
 print(classification_report(y_test,predictions))
 
-
-# In[28]:
-
-
+print ("Confusion Matrix")
 print(confusion_matrix(y_test,predictions))
 
 
@@ -254,19 +148,10 @@ print(confusion_matrix(y_test,predictions))
 # 
 # **Create an instance of the RandomForestClassifier class and fit it to our training data from the previous step.**
 
-# In[29]:
-
-
 from sklearn.ensemble import RandomForestClassifier
 
 
-# In[30]:
-
-
 rfc = RandomForestClassifier(n_estimators=600)
-
-
-# In[31]:
 
 
 rfc.fit(X_train,y_train)
@@ -278,30 +163,15 @@ rfc.fit(X_train,y_train)
 # 
 # ** Predict the class of not.fully.paid for the X_test data.**
 
-# In[32]:
-
-
 predictions = rfc.predict(X_test)
 
 
 # **Now create a classification report from the results. Do you get anything strange or some sort of warning?**
 
-# In[33]:
-
-
 from sklearn.metrics import classification_report,confusion_matrix
 
-
-# In[34]:
-
-
+print ("Classification Report")
 print(classification_report(y_test,predictions))
 
-
-# **Show the Confusion Matrix for the predictions.**
-
-# In[35]:
-
-
+print ("Confusion Matrix")
 print(confusion_matrix(y_test,predictions))
-
